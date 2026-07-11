@@ -20,10 +20,10 @@ With all my love 💝`;
 let currentScreen = 0;
 let balloonsPopped = 0;
 let isMuted = false;
-let audioContext = null;
-let musicInterval = null;
 let heartInterval = null;
 let letterTimeout = null;
+let currentMusicTrack = 'perfect'; // Default background song is Ed Sheeran's Perfect
+let audioContext = null; // Used for pop, blow, and sparkle sound effects
 
 // --- Screen IDs ---
 const screens = [
@@ -37,99 +37,40 @@ const screens = [
 ];
 
 // =============================================
-// AUDIO SYSTEM — Web Audio API Birthday Tune
+// AUDIO SYSTEM — Romantic Audio Songs Player
 // =============================================
 
-function initAudio() {
-  if (audioContext) return;
-  try {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    playBirthdayTune();
-  } catch (e) {
-    console.log('Audio not supported');
+function playMusic() {
+  const bgMusic = document.getElementById('bg-music');
+  if (!bgMusic || isMuted || !currentMusicTrack) return;
+
+  const srcFile = 'assets/perfect.mp3';
+
+  // Set lower volume for soft background feel
+  bgMusic.volume = 0.25;
+
+  // Only change the source if it is different
+  if (bgMusic.getAttribute('src') !== srcFile) {
+    bgMusic.setAttribute('src', srcFile);
+    bgMusic.load();
   }
-}
 
-function playNote(frequency, startTime, duration, type = 'sine') {
-  if (!audioContext || isMuted) return;
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-
-  osc.type = type;
-  osc.frequency.setValueAtTime(frequency, startTime);
-
-  gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(0.08, startTime + 0.05);
-  gain.gain.setValueAtTime(0.08, startTime + duration - 0.1);
-  gain.gain.linearRampToValueAtTime(0, startTime + duration);
-
-  osc.connect(gain);
-  gain.connect(audioContext.destination);
-  osc.start(startTime);
-  osc.stop(startTime + duration);
-}
-
-function playBirthdayTune() {
-  if (!audioContext || isMuted) return;
-
-  // Happy Birthday melody (simplified)
-  // Notes: C4=262, D4=294, E4=330, F4=349, G4=392, A4=440, B4=494, C5=523
-  const C4 = 262, D4 = 294, E4 = 330, F4 = 349, G4 = 392, A4 = 440, Bb4 = 466, C5 = 523;
-
-  const melody = [
-    // Happy Birthday to you
-    { note: C4, dur: 0.3 }, { note: C4, dur: 0.3 }, { note: D4, dur: 0.6 }, { note: C4, dur: 0.6 },
-    { note: F4, dur: 0.6 }, { note: E4, dur: 1.0 },
-    // Happy Birthday to you
-    { note: C4, dur: 0.3 }, { note: C4, dur: 0.3 }, { note: D4, dur: 0.6 }, { note: C4, dur: 0.6 },
-    { note: G4, dur: 0.6 }, { note: F4, dur: 1.0 },
-    // Happy Birthday dear Name
-    { note: C4, dur: 0.3 }, { note: C4, dur: 0.3 }, { note: C5, dur: 0.6 }, { note: A4, dur: 0.6 },
-    { note: F4, dur: 0.6 }, { note: E4, dur: 0.6 }, { note: D4, dur: 1.0 },
-    // Happy Birthday to you
-    { note: Bb4, dur: 0.3 }, { note: Bb4, dur: 0.3 }, { note: A4, dur: 0.6 }, { note: F4, dur: 0.6 },
-    { note: G4, dur: 0.6 }, { note: F4, dur: 1.2 },
-  ];
-
-  const now = audioContext.currentTime + 0.1;
-  let t = now;
-
-  melody.forEach(({ note, dur }) => {
-    playNote(note, t, dur, 'triangle');
-    // Add a soft harmony
-    playNote(note * 0.5, t, dur, 'sine');
-    t += dur + 0.05;
+  bgMusic.play().catch(err => {
+    console.log('Playback prevented or failed: ', err);
   });
-
-  const totalDuration = t - now + 1;
-
-  // Loop the tune
-  if (musicInterval) clearTimeout(musicInterval);
-  musicInterval = setTimeout(() => {
-    if (!isMuted) playBirthdayTune();
-  }, totalDuration * 1000);
 }
 
 function toggleMute() {
   isMuted = !isMuted;
   const btn = document.getElementById('mute-btn');
+  const bgMusic = document.getElementById('bg-music');
+  
   btn.textContent = isMuted ? '🔇' : '🔊';
 
   if (isMuted) {
-    if (musicInterval) {
-      clearTimeout(musicInterval);
-      musicInterval = null;
-    }
-    if (audioContext) {
-      audioContext.suspend();
-    }
+    if (bgMusic) bgMusic.pause();
   } else {
-    if (audioContext) {
-      audioContext.resume();
-      playBirthdayTune();
-    } else {
-      initAudio();
-    }
+    playMusic();
   }
 }
 
@@ -187,8 +128,17 @@ startHearts();
 function goToScreen(index) {
   if (index < 0 || index >= screens.length) return;
 
-  // Start audio on first interaction
-  if (!audioContext) initAudio();
+  // Start music and sound effects on first transition (when user clicks "Yes" to start)
+  if (currentScreen === 0 && index === 1) {
+    playMusic();
+    if (!audioContext) {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        console.log('Web Audio not supported for sound effects');
+      }
+    }
+  }
 
   const current = document.getElementById(screens[currentScreen]);
   const next = document.getElementById(screens[index]);
@@ -674,6 +624,22 @@ function playSparkleSound() {
 let confettiInterval = null;
 
 function initFinal() {
+  // Stop background music automatically after 5 seconds
+  setTimeout(() => {
+    const bgMusic = document.getElementById('bg-music');
+    if (bgMusic && !bgMusic.paused) {
+      let fadeInterval = setInterval(() => {
+        if (bgMusic.volume > 0.02) {
+          bgMusic.volume -= 0.02;
+        } else {
+          clearInterval(fadeInterval);
+          bgMusic.pause();
+          bgMusic.volume = 0.25; // Reset volume level
+        }
+      }, 50);
+    }
+  }, 10000);
+
   // Start celebration confetti
   const container = document.getElementById('celebration-confetti');
   container.innerHTML = '';
@@ -782,6 +748,16 @@ function replay() {
   const currentEl = document.getElementById(screens[currentScreen]);
   currentEl.classList.remove('active');
 
+  // Restart the chosen song from beginning
+  const bgMusic = document.getElementById('bg-music');
+  if (bgMusic) {
+    bgMusic.volume = 0.25; // Reset volume
+    bgMusic.currentTime = 0;
+    if (!isMuted && currentMusicTrack) {
+      bgMusic.play().catch(err => console.log('Replay audio error: ', err));
+    }
+  }
+
   setTimeout(() => {
     const landing = document.getElementById(screens[0]);
     landing.classList.add('active');
@@ -798,13 +774,14 @@ document.addEventListener('touchstart', function () { }, { passive: true });
 
 // Handle visibility change — pause/resume audio
 document.addEventListener('visibilitychange', () => {
+  const bgMusic = document.getElementById('bg-music');
+  if (!bgMusic) return;
+
   if (document.hidden) {
-    if (audioContext) audioContext.suspend();
-    if (musicInterval) clearTimeout(musicInterval);
+    bgMusic.pause();
   } else {
-    if (audioContext && !isMuted) {
-      audioContext.resume();
-      playBirthdayTune();
+    if (!isMuted && currentMusicTrack) {
+      bgMusic.play().catch(err => console.log(err));
     }
   }
 });
