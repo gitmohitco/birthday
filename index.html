@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="A special birthday surprise just for you! Happy Birthday!">
+  <title>Happy Birthday! 🎂</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>">
+</head>
+
+<body>
+
+  <!-- Floating Hearts Background -->
+  <div id="hearts-container" aria-hidden="true"></div>
+
+  <!-- Mute/Unmute Button -->
+  <button id="mute-btn" class="mute-btn" aria-label="Toggle music" title="Toggle music">
+    🔊
+  </button>
+
+  <!-- ============================
+       SCREEN 1 — LANDING
+       ============================ -->
+  <section id="screen-landing" class="screen active">
+    <div class="screen-content">
+      <h1 class="heading-cursive large">Happy Birthday,<br>Divya</h1>
+
+      <img id="landing-img" class="landing-illustration" src="assets/bears-cake.png"
+        alt="Two cute bears celebrating with a birthday cake">
+
+      <p class="landing-question">Are you excited for what's next?</p>
+
+      <div class="btn-group" id="btn-group">
+        <button id="btn-yes" class="btn btn-primary" onclick="goToScreen(1)">Yes</button>
+        <button id="btn-no" class="btn btn-secondary">No</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       SCREEN 2 — BALLOON POP
+       ============================ -->
+  <section id="screen-balloons" class="screen">
+    <div class="screen-content">
+      <h2 class="heading-cursive large" style="color: var(--text-heading);">Pop all 4 balloons</h2>
+
+      <div class="balloon-grid" id="balloon-grid">
+        <!-- Balloon 1 -->
+        <div class="balloon-wrapper" data-word="You" onclick="popBalloon(this)">
+          <div class="balloon balloon-1"><span class="shine"></span></div>
+          <span class="balloon-word">You</span>
+        </div>
+        <!-- Balloon 2 -->
+        <div class="balloon-wrapper" data-word="are" onclick="popBalloon(this)">
+          <div class="balloon balloon-2"><span class="shine"></span></div>
+          <span class="balloon-word">are</span>
+        </div>
+        <!-- Balloon 3 -->
+        <div class="balloon-wrapper" data-word="so" onclick="popBalloon(this)">
+          <div class="balloon balloon-3"><span class="shine"></span></div>
+          <span class="balloon-word">so</span>
+        </div>
+        <!-- Balloon 4 -->
+        <div class="balloon-wrapper" data-word="special" onclick="popBalloon(this)">
+          <div class="balloon balloon-4"><span class="shine"></span></div>
+          <span class="balloon-word">special</span>
+        </div>
+      </div>
+
+      <button id="btn-balloons-continue" class="btn btn-primary btn-hidden" onclick="goToScreen(2)">Continue →</button>
+    </div>
+  </section>
+
+  <!-- ============================
+       SCREEN 3 — CANDLE BLOW
+       ============================ -->
+  <section id="screen-candle" class="screen">
+    <div class="screen-content">
+      <h2 class="heading-cursive large">Blow the candle, Divya</h2>
+
+      <div class="cake-container">
+        <div class="candle" id="candle">
+          <div class="flame-container" id="flame-container">
+            <div class="flame" id="flame"></div>
+          </div>
+        </div>
+        <img class="cake-illustration" src="assets/—Pngtree—delicious two-tiered pink cake with_23984811-Photoroom.png" alt="Birthday cake">
+      </div>
+
+      <button id="btn-blow" class="btn btn-primary candle-blow-btn" onclick="blowCandle()">💨 Blow</button>
+
+      <p class="wish-text" id="wish-text">Close your eyes<br>& make a wish ✨</p>
+    </div>
+  </section>
+
+  <!-- ============================
+       SCREEN 4 — BOUQUET
+       ============================ -->
+  <section id="screen-bouquet" class="screen scrollable">
+    <div class="screen-content">
+      <h2 class="heading-cursive medium">Your Rose Bouquet 🌹</h2>
+
+      <img id="bouquet-img" class="bouquet-image" src="assets/rose-bouquet-Photoroom.png"
+        alt="Beautiful red rose bouquet">
+
+      <div class="messages-container" id="messages-container">
+        <div class="message-bubble" data-delay="500">Forever yours ❤️</div>
+        <div class="message-bubble" data-delay="1000">You make my world beautiful</div>
+        <div class="message-bubble" data-delay="1500">You are my sunshine 🌞</div>
+        <div class="message-bubble" data-delay="2000">Happy Birthday Divya 💖</div>
+        <div class="message-bubble" data-delay="2500">I'm lucky to have you 😊</div>
+        <div class="message-bubble" data-delay="3000">You are my favorite person 💕</div>
+      </div>
+
+      <button id="btn-bouquet-continue" class="btn btn-primary btn-hidden" onclick="goToScreen(4)">Continue →</button>
+    </div>
+  </section>
+
+  <!-- ============================
+       SCREEN 5 — LETTER
+       ============================ -->
+  <section id="screen-letter" class="screen scrollable">
+    <div class="screen-content">
+      <h2 class="heading-cursive medium">A Message From My Heart 💌</h2>
+
+      <div class="letter-card">
+        <div class="letter-heart-badge">♥</div>
+
+        <div class="letter-text-area">
+          <p id="letter-text" class="text-handwritten"></p>
+          <span id="letter-cursor" class="letter-cursor"></span>
+        </div>
+
+        <img class="letter-bunnies" src="assets/letter-bunnies-Photoroom.png" alt="Cute bunnies">
+      </div>
+
+      <button id="btn-letter-continue" class="btn btn-primary btn-hidden" onclick="goToScreen(5)">Continue →</button>
+    </div>
+  </section>
+
+  <!-- ============================
+       SCREEN 6 — GIFT
+       ============================ -->
+  <section id="screen-gift" class="screen">
+    <div class="screen-content">
+      <h2 class="heading-cursive large">One Last Thing... ✨</h2>
+
+      <div class="gift-container" id="gift-container" onclick="openGift()">
+        <div class="gift-glow"></div>
+        <img class="gift-image" src="assets/gift-box-Photoroom.png" alt="A gift box for you">
+      </div>
+      <p class="gift-hint">Tap the gift! 🎁</p>
+    </div>
+  </section>
+
+  <!-- ============================
+       SCREEN 7 — FINAL
+       ============================ -->
+  <section id="screen-final" class="screen">
+    <div class="screen-content">
+      <div class="final-illustration-card">
+        <span class="heart-badge">💕</span>
+        <img class="final-illustration" src="assets/love-birds.png" alt="Love birds celebrating birthday">
+      </div>
+
+      <h2 class="final-heading">Lots of love for you ❤️</h2>
+
+      <p class="final-subtext">
+        Once again, Happy Birthday Divya!<br>
+        Hope you loved your surprise 🎉
+      </p>
+
+      <button class="btn btn-outline" onclick="replay()">↻ Replay</button>
+    </div>
+
+    <!-- Celebration confetti container -->
+    <div id="celebration-confetti" class="celebration-confetti" aria-hidden="true"></div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
