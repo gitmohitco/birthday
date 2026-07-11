@@ -275,9 +275,24 @@ function initBalloons() {
   balloonsPopped = 0;
   const wrappers = document.querySelectorAll('.balloon-wrapper');
   wrappers.forEach(w => w.classList.remove('popped'));
+
+  const grid = document.getElementById('balloon-grid');
+  grid.style.opacity = '1';
+  grid.style.transform = '';
+  grid.style.transition = '';
+
+  const sentence = document.getElementById('balloon-sentence');
+  sentence.classList.remove('show', 'glow');
+  sentence.querySelectorAll('.sentence-word').forEach(w => w.classList.remove('visible'));
+
+  const celebration = document.getElementById('balloon-celebration');
+  celebration.innerHTML = '';
+
   document.getElementById('btn-balloons-continue').classList.remove('btn-visible');
   document.getElementById('btn-balloons-continue').classList.add('btn-hidden');
 }
+
+let balloonCelebrationInterval = null;
 
 function popBalloon(wrapper) {
   if (wrapper.classList.contains('popped')) return;
@@ -294,12 +309,87 @@ function popBalloon(wrapper) {
 
   // Check if all popped
   if (balloonsPopped >= 4) {
+    // Step 1: Fade out the balloon grid after a short pause
     setTimeout(() => {
-      const btn = document.getElementById('btn-balloons-continue');
-      btn.classList.remove('btn-hidden');
-      btn.classList.add('btn-visible');
-    }, 800);
+      const grid = document.getElementById('balloon-grid');
+      grid.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      grid.style.opacity = '0';
+      grid.style.transform = 'scale(0.9)';
+
+      // Step 2: Show the sentence container, then reveal words one by one
+      setTimeout(() => {
+        const sentence = document.getElementById('balloon-sentence');
+        sentence.classList.add('show');
+
+        const words = sentence.querySelectorAll('.sentence-word');
+        words.forEach((word, i) => {
+          setTimeout(() => {
+            word.classList.add('visible');
+          }, i * 400);
+        });
+
+        // Step 3: After all words appear, start celebration
+        const totalWordTime = words.length * 400 + 300;
+        setTimeout(() => {
+          sentence.classList.add('glow');
+          startBalloonCelebration();
+
+          // Step 4: Show continue button
+          setTimeout(() => {
+            const btn = document.getElementById('btn-balloons-continue');
+            btn.classList.remove('btn-hidden');
+            btn.classList.add('btn-visible');
+          }, 800);
+        }, totalWordTime);
+      }, 700);
+    }, 600);
   }
+}
+
+function startBalloonCelebration() {
+  const container = document.getElementById('balloon-celebration');
+  const colors = ['#e91e63', '#9c27b0', '#ff5722', '#ffc107', '#4caf50', '#2196f3', '#f48fb1', '#ff80ab', '#ea80fc', '#d4a017'];
+
+  // Clear any existing interval
+  if (balloonCelebrationInterval) clearInterval(balloonCelebrationInterval);
+
+  // Burst of confetti for 3 seconds
+  let elapsed = 0;
+  balloonCelebrationInterval = setInterval(() => {
+    elapsed += 150;
+    if (elapsed > 3000) {
+      clearInterval(balloonCelebrationInterval);
+      balloonCelebrationInterval = null;
+      return;
+    }
+
+    for (let i = 0; i < 5; i++) {
+      const piece = document.createElement('div');
+      piece.classList.add('confetti-piece');
+
+      const x = Math.random() * window.innerWidth;
+      const drift = (Math.random() - 0.5) * 200;
+      const dur = 2.5 + Math.random() * 2;
+      const size = 6 + Math.random() * 10;
+      const shapes = ['50%', '0', '30%'];
+
+      piece.style.cssText = `
+        left: ${x}px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        --drift: ${drift}px;
+        animation-duration: ${dur}s;
+        width: ${size}px;
+        height: ${size * (0.5 + Math.random())}px;
+        border-radius: ${shapes[Math.floor(Math.random() * shapes.length)]};
+      `;
+
+      container.appendChild(piece);
+
+      setTimeout(() => {
+        if (piece.parentNode) piece.parentNode.removeChild(piece);
+      }, dur * 1000);
+    }
+  }, 150);
 }
 
 function playPopSound() {
@@ -451,39 +541,33 @@ function playBlowSound() {
 
 function initBouquet() {
   const bouquet = document.getElementById('bouquet-img');
-  const bubbles = document.querySelectorAll('#messages-container .message-bubble');
+  const bubbles = document.querySelectorAll('#bouquet-layout .message-bubble');
   const continueBtn = document.getElementById('btn-bouquet-continue');
-  const screen = document.getElementById('screen-bouquet');
 
   // Reset
   bouquet.classList.remove('show');
   bubbles.forEach(b => b.classList.remove('show'));
   continueBtn.classList.remove('btn-visible');
   continueBtn.classList.add('btn-hidden');
-  screen.scrollTop = 0;
 
   // Animate bouquet in
   setTimeout(() => {
     bouquet.classList.add('show');
   }, 200);
 
-  // Stagger message bubbles
+  // Stagger message bubbles one after another
   bubbles.forEach((bubble, i) => {
-    const delay = parseInt(bubble.dataset.delay) || (i * 500 + 500);
+    const delay = parseInt(bubble.dataset.delay) || (i * 600 + 600);
     setTimeout(() => {
       bubble.classList.add('show');
     }, delay + 600); // +600 for bouquet animation
   });
 
   // Show continue after all messages
-  const lastDelay = parseInt(bubbles[bubbles.length - 1]?.dataset.delay || 3000);
+  const lastDelay = parseInt(bubbles[bubbles.length - 1]?.dataset.delay || 3600);
   setTimeout(() => {
     continueBtn.classList.remove('btn-hidden');
     continueBtn.classList.add('btn-visible');
-    // Auto-scroll to make button visible
-    setTimeout(() => {
-      continueBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
   }, lastDelay + 1500);
 }
 
@@ -654,8 +738,22 @@ function replay() {
   // Reset all screens
   balloonsPopped = 0;
 
-  // Reset balloon wrappers
+  // Stop balloon celebration
+  if (balloonCelebrationInterval) {
+    clearInterval(balloonCelebrationInterval);
+    balloonCelebrationInterval = null;
+  }
+
+  // Reset balloon wrappers and sentence
   document.querySelectorAll('.balloon-wrapper').forEach(w => w.classList.remove('popped'));
+  const grid = document.getElementById('balloon-grid');
+  grid.style.opacity = '1';
+  grid.style.transform = '';
+  grid.style.transition = '';
+  const sentence = document.getElementById('balloon-sentence');
+  sentence.classList.remove('show', 'glow');
+  const balloonCelebration = document.getElementById('balloon-celebration');
+  if (balloonCelebration) balloonCelebration.innerHTML = '';
 
   // Reset buttons
   ['btn-balloons-continue', 'btn-bouquet-continue', 'btn-letter-continue'].forEach(id => {

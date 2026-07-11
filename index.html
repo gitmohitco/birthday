@@ -70,6 +70,18 @@
         </div>
       </div>
 
+      <!-- Sentence that forms after all balloons are popped -->
+      <div id="balloon-sentence" class="balloon-sentence">
+        <span class="sentence-word">You</span>
+        <span class="sentence-word">are</span>
+        <span class="sentence-word">so</span>
+        <span class="sentence-word">special</span>
+        <span class="sentence-word">✨</span>
+      </div>
+
+      <!-- Celebration confetti for balloon screen -->
+      <div id="balloon-celebration" class="balloon-celebration" aria-hidden="true"></div>
+
       <button id="btn-balloons-continue" class="btn btn-primary btn-hidden" onclick="goToScreen(2)">Continue →</button>
     </div>
   </section>
@@ -99,20 +111,30 @@
   <!-- ============================
        SCREEN 4 — BOUQUET
        ============================ -->
-  <section id="screen-bouquet" class="screen scrollable">
+  <section id="screen-bouquet" class="screen">
     <div class="screen-content">
       <h2 class="heading-cursive medium">Your Rose Bouquet 🌹</h2>
 
-      <img id="bouquet-img" class="bouquet-image" src="assets/rose-bouquet-Photoroom.png"
-        alt="Beautiful red rose bouquet">
+      <div class="bouquet-layout" id="bouquet-layout">
+        <!-- Left messages -->
+        <div class="bouquet-messages-left">
+          <div class="message-bubble" data-delay="600">Forever yours ❤️</div>
+          <div class="message-bubble" data-delay="1200">You make my world beautiful</div>
+          <div class="message-bubble" data-delay="1800">You are my sunshine 🌞</div>
+        </div>
 
-      <div class="messages-container" id="messages-container">
-        <div class="message-bubble" data-delay="500">Forever yours ❤️</div>
-        <div class="message-bubble" data-delay="1000">You make my world beautiful</div>
-        <div class="message-bubble" data-delay="1500">You are my sunshine 🌞</div>
-        <div class="message-bubble" data-delay="2000">Happy Birthday Rosy 💖</div>
-        <div class="message-bubble" data-delay="2500">I'm lucky to have you 😊</div>
-        <div class="message-bubble" data-delay="3000">You are my favorite person 💕</div>
+        <!-- Center bouquet -->
+        <div class="bouquet-center">
+          <img id="bouquet-img" class="bouquet-image" src="assets/rose-bouquet-Photoroom.png"
+            alt="Beautiful red rose bouquet">
+        </div>
+
+        <!-- Right messages -->
+        <div class="bouquet-messages-right">
+          <div class="message-bubble" data-delay="2400">Happy Birthday Rosy 💖</div>
+          <div class="message-bubble" data-delay="3000">I'm lucky to have you 😊</div>
+          <div class="message-bubble" data-delay="3600">You are my favorite person 💕</div>
+        </div>
       </div>
 
       <button id="btn-bouquet-continue" class="btn btn-primary btn-hidden" onclick="goToScreen(4)">Continue →</button>
