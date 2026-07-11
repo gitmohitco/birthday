@@ -3,7 +3,7 @@
    ============================================= */
 
 // --- Configuration ---
-const BIRTHDAY_NAME = 'Divya';
+const BIRTHDAY_NAME = 'Rosy';
 const LETTER_CONTENT = `Dear ${BIRTHDAY_NAME},
 
 Happy Birthday to someone truly special! 🎂
